@@ -30,7 +30,7 @@ public class MyHttpRequestEditor implements ExtensionProvidedHttpRequestEditor {
     public MyHttpRequestEditor(MontoyaApi api, EditorCreationContext creationContext) {
         this.api = api;
         this.log = this.api.logging();
-        this.requestEditor = api.userInterface().createHttpRequestEditor(EditorOptions.READ_ONLY);
+        this.requestEditor = this.api.userInterface().createHttpRequestEditor(EditorOptions.READ_ONLY);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class MyHttpRequestEditor implements ExtensionProvidedHttpRequestEditor {
     @Override
     public boolean isEnabledFor(HttpRequestResponse httpRequestResponse) {
 //        log.logToOutput("REQUEST TYPE: " + httpRequestResponse.request().contentType().name());
-        return Arrays.asList(allowType).contains(httpRequestResponse.request().contentType());
+        return Arrays.asList(allowType).contains(httpRequestResponse.request().contentType()) && !httpRequestResponse.request().bodyToString().contains(UnicodeToVietnamese.magicBytes);
     }
 
     @Override

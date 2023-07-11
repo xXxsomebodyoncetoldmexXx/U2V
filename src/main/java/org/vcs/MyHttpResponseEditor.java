@@ -60,7 +60,7 @@ public class MyHttpResponseEditor implements ExtensionProvidedHttpResponseEditor
     @Override
     public boolean isEnabledFor(HttpRequestResponse requestResponse) {
 //        log.logToOutput("RESPONSE TYPE: " + requestResponse.response().inferredMimeType().name());
-        return Arrays.asList(allowMimeType).contains(requestResponse.response().inferredMimeType());
+        return Arrays.asList(allowMimeType).contains(requestResponse.response().inferredMimeType()) && !requestResponse.response().bodyToString().contains(UnicodeToVietnamese.magicBytes);
     }
 
     @Override

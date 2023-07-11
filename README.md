@@ -13,7 +13,7 @@ for examples:
 - There will be a small tab right beside `Pretty`, `Raw` and `Hex`. Change to it and the body content will be converting.
 
 # TODO
-- Fix recursion error.
+- ~~Fix recursion error.~~
 - Converting data in URL.
 - Fix performance issue when the number of request need to be converting is too high.
 - Write a better README.
