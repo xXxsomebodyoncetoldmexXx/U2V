@@ -1,0 +1,26 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java'
+}
+
+group 'org.vcs'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'net.portswigger.burp.extensions:montoya-api:+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Minimizing a shadow JAR
+shadowJar {
+    minimize()
+}
