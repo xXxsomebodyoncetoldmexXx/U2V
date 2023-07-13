@@ -2,6 +2,7 @@ package org.vcs;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.core.ToolType;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.MimeType;
 import burp.api.montoya.http.message.responses.HttpResponse;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 
 public class MyHttpResponseEditor implements ExtensionProvidedHttpResponseEditor {
     private final HttpResponseEditor requestEditor;
+    private final EditorCreationContext creationContext;
     private HttpRequestResponse requestResponse;
     private final MontoyaApi api;
     private final Logging log;
@@ -36,6 +38,7 @@ public class MyHttpResponseEditor implements ExtensionProvidedHttpResponseEditor
         this.api = api;
         this.log = this.api.logging();
         this.requestEditor = api.userInterface().createHttpResponseEditor(EditorOptions.READ_ONLY);
+        this.creationContext = creationContext;
     }
     @Override
     public HttpResponse getResponse() {
@@ -47,7 +50,7 @@ public class MyHttpResponseEditor implements ExtensionProvidedHttpResponseEditor
         this.requestResponse = requestResponse;
         String body = this.requestResponse.response().bodyToString();
         try {
-            body = UnicodeToVietnamese.magicBytes + BodyProcessor.convert2Vietnamese(body);
+            body = BodyProcessor.convert2Vietnamese(body);
         } catch (IOException e) {
             body += "\n\n----------------------------------------------------------\nEXCEPTION, CHECK LOG";
             throw new RuntimeException(e);
@@ -59,8 +62,8 @@ public class MyHttpResponseEditor implements ExtensionProvidedHttpResponseEditor
 
     @Override
     public boolean isEnabledFor(HttpRequestResponse requestResponse) {
-//        log.logToOutput("RESPONSE TYPE: " + requestResponse.response().inferredMimeType().name());
-        return Arrays.asList(allowMimeType).contains(requestResponse.response().inferredMimeType()) && !requestResponse.response().bodyToString().contains(UnicodeToVietnamese.magicBytes);
+        return Arrays.asList(allowMimeType).contains(requestResponse.response().inferredMimeType()) &&
+                !this.creationContext.toolSource().isFromTool(ToolType.EXTENSIONS);
     }
 
     @Override

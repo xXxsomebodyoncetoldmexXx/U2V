@@ -2,6 +2,7 @@ package org.vcs;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.core.ByteArray;
+import burp.api.montoya.core.ToolType;
 import burp.api.montoya.http.message.ContentType;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.http.message.requests.HttpRequest;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 
 public class MyHttpRequestEditor implements ExtensionProvidedHttpRequestEditor {
     private final HttpRequestEditor requestEditor;
+    private final EditorCreationContext creationContext;
     private HttpRequestResponse requestResponse;
     private final MontoyaApi api;
     private final Logging log;
@@ -31,6 +33,7 @@ public class MyHttpRequestEditor implements ExtensionProvidedHttpRequestEditor {
         this.api = api;
         this.log = this.api.logging();
         this.requestEditor = this.api.userInterface().createHttpRequestEditor(EditorOptions.READ_ONLY);
+        this.creationContext = creationContext;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class MyHttpRequestEditor implements ExtensionProvidedHttpRequestEditor {
         this.requestResponse = httpRequestResponse;
         String body = this.requestResponse.request().bodyToString();
         try {
-            body = UnicodeToVietnamese.magicBytes + BodyProcessor.convert2Vietnamese(body);
+            body = BodyProcessor.convert2Vietnamese(body);
         } catch (IOException e) {
             body += "\n\n----------------------------------------------------------\nEXCEPTION, CHECK LOG";
             throw new RuntimeException(e);
@@ -54,8 +57,8 @@ public class MyHttpRequestEditor implements ExtensionProvidedHttpRequestEditor {
 
     @Override
     public boolean isEnabledFor(HttpRequestResponse httpRequestResponse) {
-//        log.logToOutput("REQUEST TYPE: " + httpRequestResponse.request().contentType().name());
-        return Arrays.asList(allowType).contains(httpRequestResponse.request().contentType()) && !httpRequestResponse.request().bodyToString().contains(UnicodeToVietnamese.magicBytes);
+        return Arrays.asList(allowType).contains(httpRequestResponse.request().contentType()) &&
+                !this.creationContext.toolSource().isFromTool(ToolType.EXTENSIONS);
     }
 
     @Override
